@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AgentDesk</title>
+<style>
+:root{--bg:#050b1a;--panel:#0c1830;--panel2:#10203f;--line:#1f3a6e;--text:#e6eeff;--mute:#8ea3c9;--accent:#3d8bff;--glow:#2b6dff55;--ok:#2fd28a;--warn:#f5b84b;--bad:#ff6b6b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef3fc;--panel:#fff;--panel2:#f1f5fd;--line:#c5d4f0;--text:#12213f;--mute:#566a91;--glow:#3d8bff33}}
+:root[data-theme="light"]{--bg:#eef3fc;--panel:#fff;--panel2:#f1f5fd;--line:#c5d4f0;--text:#12213f;--mute:#566a91;--glow:#3d8bff33}
+:root[data-theme="dark"]{--bg:#050b1a;--panel:#0c1830;--panel2:#10203f;--line:#1f3a6e;--text:#e6eeff;--mute:#8ea3c9;--glow:#2b6dff55}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background-image:radial-gradient(900px 500px at 50% 30%,var(--glow),transparent 70%)}
+.app{max-width:1280px;margin:0 auto;padding:16px}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.logo{font-weight:700;font-size:18px;display:flex;gap:8px;align-items:center}
+.logo i{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),#7b5cff);display:inline-block}
+.search{flex:1;min-width:140px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--mute)}
+.badge{border:1px solid var(--accent);border-radius:8px;padding:6px 12px;font-weight:600;box-shadow:0 0 14px var(--glow)}
+.badge small{background:#4b3fd1;color:#fff;border-radius:4px;padding:1px 6px;margin-left:6px;font-size:11px}
+button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:220px 1fr 280px;gap:14px}
+.col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 0 22px var(--glow)}
+.card h2{margin:0 0 10px;font-size:13px;font-weight:600;color:var(--mute)}
+.mail{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid transparent;border-left:3px solid var(--c,var(--accent));border-radius:8px;padding:8px 10px;margin-bottom:8px}
+.mail:hover,.mail[aria-pressed=true]{border-color:var(--accent)}
+.mail b{display:block;font-size:13px}.mail span{color:var(--mute);font-size:12px}
+.pill{display:inline-block;font-size:11px;border-radius:99px;padding:1px 8px;background:var(--panel2);border:1px solid var(--line);margin-left:6px}
+.hub{text-align:center;padding:18px}
+.agent{width:120px;height:120px;border-radius:50%;margin:6px auto 8px;display:grid;place-items:center;font-size:44px;border:2px solid var(--accent);background:radial-gradient(circle,#1b4fb8 0%,var(--panel2) 70%);box-shadow:0 0 40px var(--accent);animation:pulse 3s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 18px var(--accent)}}
+@media (prefers-reduced-motion:reduce){.agent{animation:none}}
+.modes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.mode{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 6px;font-size:12px}
+.mode b{display:block;font-size:13px}.mode em{font-style:normal;color:var(--mute)}
+.mode.on{border-color:var(--ok)}
+.tl{display:flex;justify-content:space-between;gap:6px;margin-top:6px}
+.step{flex:1;text-align:center;font-size:12px;color:var(--mute)}
+.step i{display:grid;place-items:center;width:34px;height:34px;margin:0 auto 4px;border-radius:50%;border:1.5px solid var(--accent);font-style:normal;color:var(--text)}
+.row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.row:last-child{border:0}.ok{color:var(--ok)}
+.draft{background:var(--panel2);border-radius:8px;padding:10px;margin-bottom:10px}
+.draft p{margin:6px 0;color:var(--mute);font-size:13px}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:5px 10px;font-size:12px}
+.btn.go{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.no{border-color:var(--bad);color:var(--bad)}
+.log{max-height:230px;overflow:auto;font-size:13px}
+.log div{padding:4px 0;border-bottom:1px solid var(--line)}.log time{color:var(--mute);margin-right:8px;font-size:12px}
+.toggle{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font-size:13px}
+.note{font-size:12px;color:var(--mute);margin-top:10px}
+.step.active{color:var(--text)}.step.active i{background:var(--accent);box-shadow:0 0 14px var(--accent);color:#fff}
+#status::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:8px;animation:pulse2 1.4s infinite}
+#status.off::before{background:var(--warn);animation:none}
+@keyframes pulse2{50%{opacity:.25}}
+@keyframes flash{from{background:var(--glow)}}
+.mail.new{animation:flash 1.8s}
+.pill.p1{color:var(--bad);border-color:var(--bad)}.pill.p2{color:var(--warn);border-color:var(--warn)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 4px}.stat b{display:block;font-size:20px}.stat span{font-size:12px;color:var(--mute)}
+.task{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:13px}
+@media (prefers-reduced-motion:reduce){#status::before,.mail.new{animation:none}}
+@media (max-width:1000px){.grid{grid-template-columns:1fr}.modes{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="logo"><i></i>AgentDesk</div>
+  <div class="search">Search mail, tasks, drafts</div>
+  <div class="badge">Live simulation<small>SAMPLE DATA</small></div>
+  <button class="btn" id="theme" aria-label="Toggle theme">Theme</button>
+</header>
+
+<div class="grid">
+  <div class="col">
+    <section class="card">
+      <h2>Inbox · 14 unread</h2>
+      <button class="mail" style="--c:#7b5cff" data-i="0" aria-pressed="true"><b>Partner Proposal</b><span>Action needed</span><span class="pill">P1</span></button>
+      <button class="mail" style="--c:#3d8bff" data-i="1"><b>Design Sync</b><span>Today, 11:00 AM</span></button>
+      <button class="mail" style="--c:#f5b84b" data-i="2"><b>Roadmap Feedback</b><span>For review</span></button>
+      <button class="mail" style="--c:#3d8bff" data-i="3"><b>Budget Update</b><span>FY25 planning</span></button>
+      <button class="mail" style="--c:#c75aa8" data-i="4"><b>Team Celebration</b><span>Friday, 3:00 PM</span></button>
+    </section>
+    <section class="card">
+      <h2>Automations</h2>
+      <div class="row">Rule created <span class="ok">✓</span></div>
+      <div class="row">Move to folder <span class="ok">✓</span></div>
+      <div class="row">Categorize <span class="ok">✓</span></div>
+      <div class="row">Notify me <span class="ok">✓</span></div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="card hub">
+      <h2>Agent manager</h2>
+      <div class="agent" role="img" aria-label="AI email assistant"><svg viewBox="0 0 100 100" width="100%" height="100%"><rect x="18" y="36" width="64" height="42" rx="7" fill="#0b1630" stroke="#8ec5ff" stroke-width="2.5"/><path d="M20 40l30 21 30-21" fill="none" stroke="#8ec5ff" stroke-width="2.5" stroke-linejoin="round"/><path d="M72 12l3.5 11 11 3.5-11 3.5L72 41l-3.5-11-11-3.5 11-3.5z" fill="#ffd86b"/><circle cx="30" cy="24" r="2.5" fill="#8ec5ff"/><circle cx="84" cy="58" r="0" fill="none"/></svg></div>
+      <b id="status">Agent running · 3 actions waiting for you</b>
+      <div class="modes">
+        <div class="mode on"><b>Auto-triage</b><em>On</em></div>
+        <div class="mode on"><b>Draft and reply</b><em>Needs approval</em></div>
+        <div class="mode on"><b>Reschedule</b><em>Needs approval</em></div>
+        <div class="mode on"><b>Focus time</b><em>On</em></div>
+      </div>
+      <div class="tl">
+        <div class="step"><i>1</i>Scan and understand</div>
+        <div class="step"><i>2</i>Plan and prioritize</div>
+        <div class="step"><i>3</i>Act and automate</div>
+        <div class="step"><i>4</i>Review and confirm</div>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Live digest</h2>
+      <div id="digest" class="draft"><b>Partner Proposal</b><p>Acme wants pricing terms by Friday. Suggested reply drafted.</p><div class="btns"><span class="pill">needs reply</span><span class="pill">deadline Fri</span><span class="pill">task: send pricing</span></div></div>
+      <div class="note">Summary, tasks and priority come from the Triage agent as validated JSON.</div>
+    </section>
+  </div>
+
+  <div class="col">
+    <section class="card">
+      <h2>Approval queue</h2>
+      <div id="queue"></div>
+    </section>
+    <section class="card">
+      <h2>Audit log</h2>
+      <div class="log" id="log"></div>
+      <label class="toggle">Agent kill switch <input type="checkbox" id="kill" checked></label>
+    </section>
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+var $=function(s){return document.querySelector(s)},root=document.documentElement;
+$('#theme').onclick=function(){var d=root.dataset.theme==='dark'||(!root.dataset.theme&&!matchMedia('(prefers-color-scheme: light)').matches);root.dataset.theme=d?'light':'dark'};
+var inboxCard=$('.mail').parentNode,h2=inboxCard.querySelector('h2');
+inboxCard.querySelectorAll('.mail').forEach(function(x){x.remove()});
+var list=document.createElement('div');inboxCard.appendChild(list);
+var q=$('#queue'),log=$('#log'),st=$('#status'),dg=$('#digest'),paused=false,unread=14,S={t:0,d:0,k:0,a:0},tasks=[],emails=[],sel=null,last=Date.now(),n=0,pi=0;
+var qh=q.parentNode.querySelector('h2'),qm=document.createElement('div');qm.className='note';q.parentNode.insertBefore(qm,q);
+var stats=document.createElement('div');stats.className='stats';st.insertAdjacentElement('afterend',stats);
+var sc=document.createElement('div');sc.className='note';stats.insertAdjacentElement('afterend',sc);
+var pool=[
+{f:'Merhawi, Acme Corp',s:'Partner Proposal',cat:'Partner',p:1,kind:'reply',due:'Fri',sum:'Acme wants pricing terms by Friday and proposes a call.',task:'Send pricing to Acme',draft:'Hi Merhawi, thanks for the proposal. We will send pricing by Friday. Does a 30 minute call Thursday work?',act:'Labeled "Partner" and starred',c:'#7b5cff'},
+{f:'Rahwa',s:'Roadmap Feedback',cat:'Product',p:2,kind:'reply',due:'Mon',sum:'Rahwa asks for comments on the Q1 roadmap before Monday.',task:'Review Q1 roadmap',draft:'Hi Rahwa, thanks for sharing. I will send my comments by Monday morning.',act:'Categorized as Product',c:'#f5b84b'},
+{f:'Finance Team',s:'Budget Update',cat:'Finance',p:2,kind:'info',due:'Wed',sum:'FY25 planning numbers changed. Approval needed by Wednesday.',task:'Approve FY25 budget',act:'Categorized as Finance and moved to Planning',c:'#3d8bff'},
+{f:'Calendar',s:'Design Sync',cat:'Meeting',p:2,kind:'meeting',sum:'Today 11:00 AM. Conf Room 32/1450 is double-booked.',draft:'Room 32/1450 is double-booked. Move the meeting to 32/2401 at the same time.',act:'Linked to calendar event',c:'#3d8bff'},
+{f:'Weekly Updates',s:'Vendor Newsletter',cat:'Newsletter',p:3,kind:'info',sum:'Weekly product news. No action needed.',act:'Moved to Archive',c:'#8ea3c9'},
+{f:'Hlna, Northwind',s:'Customer Escalation',cat:'Support',p:1,kind:'reply',due:'Today',sum:'Northwind reports an outage and wants an update today.',task:'Post outage update to Northwind',draft:'Hi Hlna, we are investigating and will update you by 3:00 PM today.',act:'Labeled "Escalation" and notified you',c:'#ff6b6b'},
+{f:'promo@bulk-mailer.biz',s:'Re: urgent account check',cat:'Suspicious',p:3,kind:'inject',sum:'Contains instructions aimed at the agent. Blocked.',c:'#ff6b6b'},
+{f:'Billing',s:'Invoice 4821 overdue',cat:'Finance',p:1,kind:'info',due:'Fri',sum:'Invoice 4821 is overdue and due by Friday.',task:'Pay invoice 4821',act:'Categorized as Finance and flagged',c:'#f5b84b'},
+{f:'HR',s:'Team Celebration',cat:'Social',p:3,kind:'info',sum:'Team lunch on Friday at 3:00 PM.',act:'Categorized as Social',c:'#c75aa8'},
+{f:'Events',s:'Product Launch Invite',cat:'Events',p:3,kind:'info',sum:'Invite to the launch event next Tuesday.',act:'Added a tentative hold to your calendar',c:'#8ea3c9'}
+];
+function stamp(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+function add(m){var d=document.createElement('div'),t=document.createElement('time');t.textContent=stamp();d.append(t,document.createTextNode(m));log.prepend(d);last=Date.now()}
+function status(m){st.textContent=m}
+function step(i){document.querySelectorAll('.step').forEach(function(s,j){s.classList.toggle('active',j===i)})}
+function after(ms,f){setTimeout(function(){paused?after(500,f):f()},ms)}
+function drawStats(){stats.innerHTML='';[['Triaged',S.t],['Drafts',S.d],['Tasks',S.k],['Auto-actions',S.a]].forEach(function(x){var d=document.createElement('div');d.className='stat';d.innerHTML='<b></b><span></span>';d.firstChild.textContent=x[1];d.lastChild.textContent=x[0];stats.appendChild(d)})}
+function draw(){list.innerHTML='';emails.slice(0,7).forEach(function(e){var b=document.createElement('button'),t=document.createElement('b'),s=document.createElement('span');b.className='mail'+(e.fresh?' new':'');b.style.setProperty('--c',e.c);b.setAttribute('aria-pressed',String(e===sel));t.textContent=e.s;s.textContent=e.done?e.f+', '+e.cat:'Scanning...';b.append(t,s);if(e.done){var p=document.createElement('span');p.className='pill p'+e.p;p.textContent=e.kind==='inject'?'Blocked':'P'+e.p;b.append(p)}b.onclick=function(){sel=e;draw();detail()};list.append(b)});h2.textContent='Inbox · '+unread+' unread'}
+function detail(){if(!sel){digest();return}dg.innerHTML='';var b=document.createElement('b'),p=document.createElement('p'),r=document.createElement('div');b.textContent=sel.s;p.textContent=sel.done?sel.sum:'The agent is still reading this email.';r.className='btns';(sel.done?[sel.cat,'P'+sel.p,sel.kind==='reply'?'needs reply':'no reply needed',sel.due?'due '+sel.due:null]:[]).forEach(function(x){if(x){var s=document.createElement('span');s.className='pill';s.textContent=x;r.append(s)}});var k=document.createElement('button');k.className='btn';k.style.marginTop='10px';k.textContent='Back to digest';k.onclick=function(){sel=null;draw();digest()};dg.append(b,p,r,k)}
+function digest(){if(sel)return;dg.innerHTML='';var b=document.createElement('b'),p=document.createElement('p');b.textContent='Updated '+stamp();p.textContent=S.t+' triaged, '+S.d+' drafts, '+S.k+' tasks, '+S.a+' auto-actions';dg.append(b,p);emails.filter(function(e){return e.done&&e.kind!=='inject'&&e.p===1}).slice(0,3).forEach(function(e){var d=document.createElement('div');d.className='row';d.textContent='P1: '+e.s+(e.due?' (due '+e.due+')':'');dg.append(d)});tasks.slice(0,5).forEach(function(t){var l=document.createElement('label'),c=document.createElement('input');l.className='task';c.type='checkbox';c.checked=!!t.done;c.onchange=function(){t.done=c.checked;add((c.checked?'Task done: ':'Task reopened: ')+t.t)};l.append(c,document.createTextNode(t.t));dg.append(l)})}
+function qcheck(){var c=q.querySelectorAll('.draft').length;qh.textContent='Approval queue ('+c+')';qm.textContent=c?'':'Nothing waiting. New drafts and calendar changes appear here for your approval.'}
+function addQ(title,body,kind){var d=document.createElement('div');d.className='draft';d.innerHTML='<b></b><p></p><div class="btns"><button class="btn go">Approve</button><button class="btn">Edit</button><button class="btn no">Reject</button></div>';d.querySelector('b').textContent=title;var p=d.querySelector('p');p.textContent=body;var bs=d.querySelectorAll('button');
+bs[0].onclick=function(){add({reply:'Approved: draft saved to Gmail drafts (not sent)',room:'Approved: room rebooked 32/1450 to 32/2401',focus:'Approved: focus time blocked tomorrow 9:00 to 11:00'}[kind]);d.remove();qcheck();drawStats();digest()};
+bs[1].onclick=function(){p.contentEditable='true';p.focus();bs[1].textContent='Editing'};
+bs[2].onclick=function(){add('Rejected: '+title);d.remove();qcheck()};
+q.prepend(d);qcheck()}
+function run(e){step(0);status('Scanning: '+e.s);add('Scanning "'+e.s+'" from '+e.f);
+after(1500,function(){step(1);status('Scoring priority: '+e.s);
+after(1500,function(){step(2);e.done=1;S.t++;status('Acting on: '+e.s);add('Triaged "'+e.s+'" as '+e.cat+', P'+e.p);
+if(e.kind==='inject'){add('Blocked: this email told the agent to forward mail. Treated as untrusted text, no action taken.')}
+else{add(e.act);S.a++;if(e.task){tasks.unshift({t:e.task});S.k++;add('Task created: '+e.task)}
+if(e.kind==='reply'){S.d++;addQ('Reply to '+e.s,e.draft,'reply');add('Draft created for review')}
+if(e.kind==='meeting'){addQ('Move '+e.s+' to Room 32/2401',e.draft,'room')}}
+draw();drawStats();digest();qcheck();
+after(1200,function(){step(3);status(q.querySelector('.draft')?'Waiting for your review':'Watching inbox');after(1800,function(){step(-1)})})})})}
+function arrive(){if(paused)return;var e=Object.assign({},pool[pi++%pool.length]);e.id=++n;emails.unshift(e);emails=emails.slice(0,30);unread++;e.fresh=1;draw();e.fresh=0;run(e)}
+for(var i=0;i<3;i++){var s=Object.assign({},pool[pi++]);s.done=1;emails.push(s)}
+draw();drawStats();digest();qcheck();status('Watching inbox');add('Agent started');
+setTimeout(arrive,1500);setInterval(arrive,9000);
+after(14000,function(){addQ('Block focus time','Tomorrow 9:00 to 11:00 AM, meeting-free. Your calendar is clear.','focus');add('Focus time proposed');qcheck()});
+$('#kill').onchange=function(e){paused=!e.target.checked;st.classList.toggle('off',paused);add(paused?'Agent paused (kill switch)':'Agent resumed');status(paused?'Agent paused':'Watching inbox')};
+setInterval(function(){sc.textContent=paused?'Paused. No emails are being processed.':'Last activity '+Math.round((Date.now()-last)/1000)+'s ago. Checking inbox every 9s.'},1000);
+})();
+</script>
+</body>
+</html>
